@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Speech_Result</title>
+    <style>
+        /* Set the background color to dark black */
+        body {
+            background-color: #000;
+            /* Dark black background color */
+            color: #fff;
+            /* Text color */
+            font-family: Arial, sans-serif;
+            /* Use a sans-serif font */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            /* Make the body cover the full viewport height */
+            margin: 0;
+        }
+
+        .stylish-tamil {
+            font-size: 48px;
+            /* Larger font size */
+            font-weight: bold;
+            /* Bold text */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Different font family */
+            color: #ff69b4;
+            /* Custom text color (pink) */
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        h1 {
+            color: #337ab7;
+            /* Blue title color */
+            text-align: center;
+        }
+
+        .text-box {
+            background-color: #333;
+            /* Dark gray background for the text box */
+            padding: 20px;
+            /* Increased padding */
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            /* Box shadow for a card-like effect */
+            text-align: center;
+            margin: 20px 0;
+            overflow-wrap: break-word;
+            position: relative;
+            /* Add relative positioning to the text box */
+        }
+
+        p {
+            font-size: 18px;
+        }
+
+        .copy-icon {
+            cursor: pointer;
+            font-size: 24px;
+            position: absolute;
+            /* Position the copy icon absolutely */
+            top: 10px;
+            /* Distance from the top */
+            right: 10px;
+            /* Distance from the right */
+            width: 24px;
+            /* Set the width of the border */
+            height: 24px;
+            /* Set the height of the border */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            /* Make it a circle */
+        }
+
+        .audio-container {
+            display: flex;
+            align-items: center;
+            /* Align audio and download icon vertically */
+        }
+
+        .audio-container audio {
+            flex: 1;
+            /* Allow the audio element to grow and take available space */
+        }
+
+        .download-icon {
+            font-size: 24px;
+            margin-left: 10px;
+            /* Add some spacing between the audio element and the download icon */
+            border: 1px solid #fff;
+            /* Add a white border around the download icon */
+            border-radius: 5px;
+            /* Add rounded corners to the border */
+            padding: 0px;
+            color: #000;
+            /* Add some padding inside the border */
+        }
+
+        /* Style for the grey-colored data container with white text */
+        #dataContainer {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow-wrap: break-word;
+            color: #fff;
+            min-height: 40px;
+            /* Set a maximum height for the container */
+            overflow-y: auto;
+            /* Enable vertical scrolling when content exceeds the height */
+        }
+
+        /* Style for individual data boxes */
+        .data-box {
+            background-color: #444;
+            /* Darker gray for individual data boxes */
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .data-box p {
+            font-size: 16px;
+        }
+
+        .icon-button {
+            background-color: #337ab7;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 25px;
+            height: 1cm;
+            font-weight: bold;
+            margin: 10px;
+            /* Add some space between buttons */
+            position: absolute;
+            top: 10px;
+            /* Position at the top */
+            right: 100px;
+            /* Position at the right */
+        }
+
+
+        .copy-message {
+            color: #fcfcfc;
+            /* Green color for the copy success message */
+            font-size: 18px;
+            position: absolute;
+            /* Position the message absolutely */
+            top: 0;
+            /* Position at the top */
+            right: 10px;
+            /* Adjust the distance from the right */
+            display: none;
+            /* Initially hide the message */
+            font-size: small;
+        }
+    </style>
+    <link rel="icon" type="image/jpg" href='assests/icon.jpg'>
+</head>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Result - Image to Speech</title>
+</head>
+
+<body>
+    <!-- <button id="getDataButton" class="icon-button" onclick="getDataAndDisplay()">
+         You can use any icon or text here 
+        History..
+    </button> -->
+    <h1>IMAGE TO SPEECH</h1>
+
+    <div class="language-selection" style="display: none;">
+        <form action="/process" method="POST">
+            <input type="hidden" name="image" value="{{ request.form['image'] }}">
+            <label for="english">English</label>
+            <input type="radio" id="english" name="language" value="en" {% if selected_language=='en' %}checked{% endif
+                %}>
+            <label for="kannada">kannada</label>
+            <input type="radio" id="kannada" name="language" value="kn" {% if selected_language=='kn' %}checked{% endif
+                %}>
+            <input type="submit" value="Change Language">
+        </form>
+    </div>
+
+    <div class="text-box">
+        <br>
+        <br>
+        <p>{{ text }}</p>
+        <span class="copy-message" id="copyMessage">Copied</span> <!-- Copy success message -->
+        <span class="copy-icon" onclick="copyToClipboard()"><br>📋</span> <!-- Copy icon -->
+    </div>
+
+
+    <div class="audio-container">
+        <audio controls autoplay>
+            <source src="{{ url_for('uploaded_file', filename='audio_speech.mp3') }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <a class="download-icon" href="{{ url_for('uploaded_file', filename='audio_speech.mp3') }}"
+            download="audio_speech.mp3">📥</a>
+    </div>
+
+    <div id="dataContainer" style="display: none;"></div> <!-- Container for displaying data -->
+
+    <script>
+        function copyToClipboard() {
+            var textElement = document.querySelector('.text-box p');
+            var textToCopy = textElement.textContent;
+
+            var textArea = document.createElement('textarea');
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+
+            // Display the copy success message
+            var copyMessage = document.getElementById('copyMessage');
+            copyMessage.style.display = 'block';
+
+            // Hide the message after a few seconds (e.g., 2 seconds)
+            setTimeout(function () {
+                copyMessage.style.display = 'none';
+            }, 2000);
+        }
+
+        function sendTextToBackend() {
+            // Get the text you want to send
+            var textElement = document.querySelector('.text-box p');
+            var textToSend = textElement.textContent;
+
+            // Define the data structure
+            var data = {
+                text: textToSend,
+            };
+
+            // Convert the data to JSON
+            var jsonData = JSON.stringify(data);
+
+            // Make an HTTP POST request to the backend
+            fetch('http://localhost:8080/result', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: jsonData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Handle the success response from the backend
+                        console.log('Text sent successfully.');
+                    } else {
+                        // Handle any errors from the backend
+                        console.error('Error sending text to the backend.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Network error:', error);
+                });
+        }
+
+        function getDataAndDisplay() {
+            // Make an HTTP GET request to fetch data from the backend
+            fetch('http://localhost:8080/getdata')
+                .then(response => response.json())
+                .then(dataArray => {
+                    // Clear the previous data
+                    var dataContainer = document.getElementById('dataContainer');
+                    dataContainer.innerHTML = '';
+
+                    // Loop through the data and create individual data boxes
+                    dataArray.forEach(dataObject => {
+                        var dataBox = document.createElement('div');
+                        dataBox.classList.add('data-box');
+
+                        var textElement = document.createElement('p');
+                        textElement.textContent = `Text: ${dataObject.text}`;
+                        dataBox.appendChild(textElement);
+
+                        dataContainer.appendChild(dataBox);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        window.onload = function () {
+            sendTextToBackend();
+        };
+
+        const getDataButton = document.getElementById('getDataButton')
+        const getdatacontainer = document.getElementById('dataContainer')
+
+        var resultVisible = false;
+        getDataButton.addEventListener('click', () => {
+            getdatacontainer.style.display = resultVisible ? 'none' : 'block';
+            resultVisible = !resultVisible;
+        });
+    </script>
+</body>
+
+</html>

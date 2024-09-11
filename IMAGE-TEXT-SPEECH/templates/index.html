@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMAGE-SPEECH</title>
+    <link rel="icon" type="image/jpg" href="templates\icon.jpg"> <!-- Added title icon -->
+    <style>
+        /* Set the background color to dark black */
+        body {
+            background-color: #000;
+            /* Dark black background color */
+            color: #fff;
+            /* Text color */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            /* Use a sans-serif font */
+        }
+
+        h1,
+        form {
+            text-align: center;
+        }
+
+        form {
+            background-color: #333;
+            /* Dark gray background for the form */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            /* Box shadow for a card-like effect */
+        }
+
+
+        h1 {
+            color: #337ab7;
+            /* Blue title color */
+        }
+
+        input[type="file"] {
+            border: 2px solid #337ab7;
+            /* Blue border for the file input */
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #f0f0f0;
+            /* Light gray background for the input */
+            color: #333;
+            /* Dark gray text color for the input */
+        }
+
+        .live-input-image {
+            max-width: 100%;
+            max-height: 400px;
+            /* You can adjust the max height as needed */
+            margin-top: 20px;
+        }
+
+        input[type="submit"] {
+            background-color: #337ab7;
+            /* Blue background for the submit button */
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            /* Bold text for the button */
+        }
+
+        input[type="submit"]:hover {
+            background-color: #286090;
+            /* Darker blue on hover */
+        }
+
+        .text-box {
+            width: 63%;
+            padding: 10px;
+            border: 2px solid #337ab7;
+            border-radius: 7px;
+            background-color: #f0f0f0;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+            /* You can adjust the font size as needed */
+            height: 20%;
+        }
+
+        .drag-drop-area {
+            border: 2px dashed #337ab7;
+            /* Dashed blue border for the drag and drop area */
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .drag-drop-area p {
+            margin: 0;
+        }
+
+        /* Align labels and radio buttons horizontally */
+        .language-label {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .language-radio {
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <form id="content" action="/process" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+        <h1>SPEECH FORM IMAGE & TEXT</h1>
+        <input type="file" name="image" accept=".png, .jpg, .jpeg">
+        <br>
+        <br>
+        <!-- Input field for user-provided text -->
+        <textarea class="text-box" name="user_text" rows="4" cols="50" placeholder="Enter text..."></textarea>
+        <br>
+
+        <h3 style="padding-right: 70%;">Language:</h3>
+        <!-- Language Selection Radio Buttons -->
+        <input class="language-radio" type="radio" id="kannada" name="language" value="kn">
+        <label class="language-label" for="kannada">kannada</label>
+        <input class="language-radio" type="radio" id="english" name="language" value="en" checked>
+        <label class="language-label" for="english">English</label>
+        <input class="language-radio" type="radio" id="hindi" name="language" value="hi">
+        <label class="language-label" for="hindi">Hindi</label>
+        <br>
+        <br>
+        <input type="submit" value="Convert">
+    </form>
+
+   
+    </div>
+    <script>
+        function validateForm() {
+            const imageInput = document.querySelector('input[type="file"]');
+            const textInput = document.querySelector('textarea[name="user_text"]');
+
+            if (imageInput.files.length > 0 && textInput.value.trim() !== '') {
+                alert("Please choose either an image or text, not both.");
+                document.querySelector('input[type="file"]').value = '';
+                document.querySelector('textarea[name="user_text"]').value = '';
+                return false; // Prevent form submission
+            }
+
+            return true; // Allow form submission
+        }
+    </script>
+</body>
+
+</html>
