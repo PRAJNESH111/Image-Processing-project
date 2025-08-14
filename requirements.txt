@@ -3,4 +3,3 @@ pytesseract
 Pillow
 deep-translator
 gTTS
-python-3.10.13
