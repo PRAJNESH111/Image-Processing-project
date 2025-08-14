@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result - IMAGE TO SPEECH</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .result-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 600px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        .text-box {
+            background-color: #f0f0f0;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            word-wrap: break-word;
+        }
+        .audio-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .audio-container audio {
+            flex-grow: 1;
+        }
+        .download-icon {
+            margin-left: 10px;
+            font-size: 24px;
+            text-decoration: none;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .back-button:hover {
+            background: linear-gradient(to right, #764ba2, #667eea);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        #debug-info {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        @media (max-width: 600px) {
+            .result-container {
+                width: 95%;
+                padding: 1rem;
+            }
+            .audio-container {
+                flex-direction: column;
+            }
+            .download-icon {
+                margin-top: 10px;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <h1>IMAGE TO SPEECH</h1>
+        <div class="text-box">
+            <p>{{ text }}</p>
+        </div>
+        <div class="audio-container">
+            <audio controls>
+                <source src="{{ url_for('uploaded_file', filename=audio_filename) }}?t={{ timestamp }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <a class="download-icon" href="{{ url_for('uploaded_file', filename=audio_filename) }}?t={{ timestamp }}" download>📥</a>
+        </div>
+        <a href="{{ url_for('index') }}" class="back-button">Back to Upload</a>
+        <div id="debug-info">
+            <p>Audio filename: {{ audio_filename }}</p>
+            <p>Timestamp: {{ timestamp }}</p>
+        </div>
+    </div>
+    <script>
+        function forceAudioReload() {
+            var audio = document.querySelector('audio');
+            var source = audio.querySelector('source');
+            var newSrc = source.src.split('?')[0] + '?t=' + new Date().getTime();
+            source.src = newSrc;
+            audio.load();
+            audio.play().catch(function(error) {
+                console.error('Error playing audio:', error);
+                document.getElementById('debug-info').innerHTML += '<p>Error playing audio: ' + error.message + '</p>';
+            });
+            document.getElementById('debug-info').innerHTML += '<p>Audio src: ' + newSrc + '</p>';
+        }
+
+        function handleNetworkError() {
+            window.addEventListener('online', function() {
+                location.reload();
+            });
+        }
+
+        window.onload = function() {
+            forceAudioReload();
+            handleNetworkError();
+        };
+    </script>
+</body>
+</html>

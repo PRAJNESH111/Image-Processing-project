@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMAGE-SPEECH</title>
+    <link rel="icon" type="image/jpg" href="{{ url_for('static', filename='icon.jpg') }}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 500px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        input[type="file"], .text-box {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .text-box {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .language-options {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 1rem;
+        }
+        .language-options label {
+            display: flex;
+            align-items: center;
+        }
+        input[type="submit"] {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background: linear-gradient(to right, #764ba2, #667eea);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        @media (max-width: 600px) {
+            .form-container {
+                width: 95%;
+                padding: 1rem;
+            }
+            .language-options {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .language-options label {
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#" class="logo">IMAGE TO SPEECH</a>
+        <a href="{{ url_for('logout') }}" class="logout">Logout</a>
+    </div>
+    <div class="content">
+        <div class="form-container">
+            <h1>SPEECH FROM IMAGE & TEXT</h1>
+            <form id="content" action="/process" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+                <div class="input-group">
+                    <input type="file" name="image" accept=".png, .jpg, .jpeg">
+                </div>
+                <div class="input-group">
+                    <textarea class="text-box" name="user_text" placeholder="Enter text..."></textarea>
+                </div>
+                <div class="language-options">
+                    <label>
+                        <input type="radio" name="language" value="kn">
+                        Kannada
+                    </label>
+                    <label>
+                        <input type="radio" name="language" value="en" checked>
+                        English
+                    </label>
+                    <label>
+                        <input type="radio" name="language" value="hi">
+                        Hindi
+                    </label>
+                </div>
+                <input type="submit" value="Convert">
+            </form>
+        </div>
+    </div>
+    <script>
+        function validateForm() {
+            const imageInput = document.querySelector('input[type="file"]');
+            const textInput = document.querySelector('textarea[name="user_text"]');
+
+            if (imageInput.files.length > 0 && textInput.value.trim() !== '') {
+                alert("Please choose either an image or text, not both.");
+                imageInput.value = '';
+                textInput.value = '';
+                return false;
+            }
+
+            return true;
+        }
+
+        // Add this function to handle network errors
+        function handleNetworkError() {
+            window.addEventListener('online', function() {
+                location.reload();
+            });
+        }
+
+        // Call the function when the page loads
+        window.onload = function() {
+            handleNetworkError();
+        };
+    </script>
+</body>
+</html>
