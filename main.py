@@ -12,9 +12,10 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Change this to a random secret key
 
 # Set the Tesseract-OCR path
-if os.name == 'nt':  # for Windows
+if os.name == 'nt':  # Windows
     tess.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract'
-
+else:  # Linux (Render)
+    tess.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 # Create a directory to store uploaded images and audio files (if they don't exist)
 if not os.path.exists('uploads'):
     os.makedirs('uploads')
